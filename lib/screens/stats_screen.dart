@@ -84,16 +84,21 @@ class _ItemStatsScreenState extends State<ItemStatsScreen> {
     );
   }
 
+  // Widget _buildStatCard(String title, int value) {
+  //   return Column(children: [Text(title), Text(value.toString())]);
+  // }
+
   Widget _buildStatCard(String title, int value) {
     return Card(
-      elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        title: Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        trailing: Text(value.toString(), style: const TextStyle(fontSize: 18)),
+      child: Column(
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          Text(value.toString(), style: const TextStyle(fontSize: 18)),
+        ],
       ),
     );
   }
