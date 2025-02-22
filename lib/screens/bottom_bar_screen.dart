@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-
+import 'package:inventory/gen/assets.gen.dart';
+import 'package:inventory/gen/colors.gen.dart';
+import 'package:inventory/screens/items_screen.dart';
+import 'package:inventory/screens/stats_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -10,12 +13,12 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _page = 2;
+  int _page = 1;
 
   final List<Widget> _pages = [
-    const HomePage(),
-    // const CartScreen(),
-    // const ProfileScreen(),
+    const ItemsScreen(),
+    const ItemStatsScreen(),
+    const ItemsScreen(),
   ];
 
   @override
@@ -25,11 +28,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
         backgroundColor: ColorName.background,
         color: ColorName.primary,
         buttonBackgroundColor: ColorName.primary,
-        height: 50,
+        height: 70,
         items: <Widget>[
-          Assets.icon.cart.svg(),
-          // Assets.icon.home.svg(color: ColorName.background),
-          // Assets.icon.profile.svg(),
+          Assets.icon.inventory.svg(width: 50, color: ColorName.background),
+          Assets.icon.home.svg(width: 50, color: ColorName.background),
+          Assets.icon.history.svg(width: 50, color: ColorName.background),
         ],
         onTap: (index) {
           setState(() {

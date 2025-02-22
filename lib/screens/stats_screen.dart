@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventory/services/api_service.dart';
 
-ApiService apiService = ApiService();
-
 class ItemStatsScreen extends StatefulWidget {
   const ItemStatsScreen({super.key});
 
@@ -11,27 +9,31 @@ class ItemStatsScreen extends StatefulWidget {
 }
 
 class _ItemStatsScreenState extends State<ItemStatsScreen> {
-  late Future<List<Map<String, int>>> _futureStats;
+  late Future<Map<String, int>> _futureStats;
   final ApiService _apiService = ApiService();
-  // ignore: unused_field
   bool _isLoading = false;
 
-  void _loadStats() async {
+  void _loadStats() {
     setState(() {
       _isLoading = true;
     });
 
-    try {
-      _futureStats =
-          _apiService.getItemStats() as Future<List<Map<String, int>>>;
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to get stats of items')));
-    }
+    _futureStats = _apiService.getItemStats();
+
+    _futureStats
+        .then((_) {
+          setState(() {
+            _isLoading = false;
+          });
+        })
+        .catchError((e) {
+          setState(() {
+            _isLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to get stats of items: $e')),
+          );
+        });
   }
 
   @override
@@ -43,43 +45,55 @@ class _ItemStatsScreenState extends State<ItemStatsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Item Statistics')),
-      body: FutureBuilder<List<Map<String, int>>>(
-        future: _futureStats,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No data available'));
-          }
-
-          final stats = snapshot.data!.first;
-          return ListView(
-            padding: EdgeInsets.all(16.0),
-            children: [
-              _buildStatCard('Dipakai', stats['dipakai']!),
-              _buildStatCard('Dikembalikan', stats['dikembalikan']!),
-              _buildStatCard('Rusak', stats['rusak']!),
-              _buildStatCard('Tersedia', stats['tersedia']!),
-            ],
-          );
-        },
+      appBar: AppBar(
+        title: const Text(
+          'STATISTIC',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
       ),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : FutureBuilder<Map<String, int>>(
+                future: _futureStats,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No data available'));
+                  }
+
+                  final stats = snapshot.data!;
+                  return ListView(
+                    padding: const EdgeInsets.all(16.0),
+                    children: [
+                      _buildStatCard('Dipakai', stats['dipakai'] ?? 0),
+                      _buildStatCard(
+                        'Dikembalikan',
+                        stats['dikembalikan'] ?? 0,
+                      ),
+                      _buildStatCard('Rusak', stats['rusak'] ?? 0),
+                      _buildStatCard('Tersedia', stats['tersedia'] ?? 0),
+                    ],
+                  );
+                },
+              ),
     );
   }
 
   Widget _buildStatCard(String title, int value) {
     return Card(
       elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
         title: Text(
           title,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        trailing: Text(value.toString(), style: TextStyle(fontSize: 18)),
+        trailing: Text(value.toString(), style: const TextStyle(fontSize: 18)),
       ),
     );
   }

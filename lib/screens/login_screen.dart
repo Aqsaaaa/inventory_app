@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,7 +12,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _nrpController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final ApiService _apiService = ApiService();
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   bool _isLoading = false;
 
@@ -32,12 +30,11 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (result['success']) {
-      await _storage.write(key: 'token', value: result['token']);
       Navigator.pushReplacementNamed(context, '/dashboard');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result['message'])),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result['message'])));
     }
   }
 
@@ -62,9 +59,9 @@ class _LoginScreenState extends State<LoginScreen> {
             _isLoading
                 ? CircularProgressIndicator()
                 : ElevatedButton(
-                    onPressed: _login,
-                    child: Text('Login'),
-                  ),
+                  onPressed: _login,
+                  child: Text('Login', style: TextStyle(fontSize: 18)),
+                ),
           ],
         ),
       ),

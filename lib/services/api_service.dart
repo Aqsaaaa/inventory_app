@@ -24,6 +24,7 @@ class ApiService {
       );
 
       final data = json.decode(response.body);
+      print(data);
 
       if (response.statusCode == 200) {
         await _storage.write(key: 'token', value: data['token']);
@@ -32,7 +33,6 @@ class ApiService {
         return {'success': false, 'message': data['message'] ?? 'Login failed'};
       }
     } catch (e) {
-      print('Error: $e');
       return {'success': false, 'message': 'Network error occurred'};
     }
   }
@@ -98,21 +98,29 @@ class ApiService {
 
   Future<Map<String, int>> getItemStats() async {
     final token = await _getToken();
+    print('Token: $token');
     final response = await http.get(
       Uri.parse('$baseUrl/status'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body)[0];
-      return {
-        'dipakai': jsonData['dipakai'],
-        'dikembalikan': jsonData['dikembalikan'],
-        'rusak': jsonData['rusak'],
-        'tersedia': jsonData['tersedia'],
-      };
+      final body = json.decode(response.body);
+
+      if (body is List && body.isNotEmpty) {
+        final Map<String, dynamic> jsonData = body.first;
+
+        return {
+          'dipakai': (jsonData['dipakai'] ?? 0) as int,
+          'dikembalikan': (jsonData['dikembalikan'] ?? 0) as int,
+          'rusak': (jsonData['rusak'] ?? 0) as int,
+          'tersedia': (jsonData['tersedia'] ?? 0) as int,
+        };
+      } else {
+        throw Exception('Invalid API response: Expected a non-empty list');
+      }
     } else {
-      throw Exception('Failed to load item statistics');
+      throw Exception('Failed to load item statistics (Status Code: ${response.statusCode})');
     }
   }
 }
