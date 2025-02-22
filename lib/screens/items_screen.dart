@@ -80,12 +80,24 @@ class _ItemsScreenState extends State<ItemsScreen> {
                           Spacer(),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: Image.network(
-                              "http://10.0.2.2:3000/api/uploads/${item.image}",
-                              height: 120,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
+                            child:
+                                item.image != null
+                                    ? Image.network(
+                                      "http://10.0.2.2:3000/api/uploads/${item.image}",
+                                      height: 120,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    )
+                                    : Container(
+                                      height: 120,
+                                      width: double.infinity,
+                                      color: Colors.grey[300],
+                                      child: Icon(
+                                        Icons.image,
+                                        size: 50,
+                                        color: Colors.grey[700],
+                                      ),
+                                    ),
                           ),
                           SizedBox(height: 8),
                           Padding(
