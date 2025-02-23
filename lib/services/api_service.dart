@@ -9,7 +9,6 @@ class ApiService {
 
   final FlutterSecureStorage _storage = FlutterSecureStorage();
 
-
   Future<String?> _getToken() async {
     return await _storage.read(key: 'token');
   }
@@ -37,7 +36,7 @@ class ApiService {
     }
   }
 
-  Future<List<Item>> getItems() async {
+  Future<List<Item>> getItems({required int page, required int limit}) async {
     final token = await _getToken();
     final response = await http.get(
       Uri.parse('$baseUrl/items'),
@@ -53,8 +52,13 @@ class ApiService {
   }
 
   // Add Item
-  Future<void> addItem(String nama, String kategori, int jumlah,
-      String deskripsi, String status) async {
+  Future<void> addItem(
+    String nama,
+    String kategori,
+    int jumlah,
+    String deskripsi,
+    String status,
+  ) async {
     final token = await _getToken();
     final response = await http.post(
       Uri.parse('$baseUrl/items'),
@@ -120,7 +124,9 @@ class ApiService {
         throw Exception('Invalid API response: Expected a non-empty list');
       }
     } else {
-      throw Exception('Failed to load item statistics (Status Code: ${response.statusCode})');
+      throw Exception(
+        'Failed to load item statistics (Status Code: ${response.statusCode})',
+      );
     }
   }
 }
