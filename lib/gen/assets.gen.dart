@@ -33,6 +33,8 @@ class $AssetsIconGen {
   /// File path: assets/icon/plus.svg
   SvgGenImage get plus => const SvgGenImage('assets/icon/plus.svg');
 
+  SvgGenImage get update => const SvgGenImage('assets/icon/update.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
     back,

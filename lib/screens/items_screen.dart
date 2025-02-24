@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:inventory/gen/assets.gen.dart';
 import '../../services/api_service.dart';
 import '../../models/item.dart';
 
@@ -245,8 +247,34 @@ class _ItemsScreenState extends State<ItemsScreen> {
         title: Text("Items"),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () => _loadItems(refresh: true),
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.pushReplacementNamed(
+                context,
+                '/form',
+                arguments: 'add',
+              );
+            },
+            tooltip: 'User Input',
+          ),
+          IconButton(
+            icon: SvgPicture.asset(
+              Assets.icon.update.path,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).iconTheme.color!,
+                BlendMode.srcIn,
+              ),
+            ),
+            onPressed: () {
+              Navigator.pushReplacementNamed(
+                context,
+                '/form',
+                arguments: 'update',
+              );
+            },
+            tooltip: 'Update', // Tambahkan tooltip
           ),
         ],
       ),
