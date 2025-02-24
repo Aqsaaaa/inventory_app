@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:inventory/models/item.dart';
 import 'dart:io';
+
+import 'package:inventory/services/api_service.dart';
 
 class UploadForm extends StatefulWidget {
   final String formMode;
@@ -13,10 +16,15 @@ class UploadForm extends StatefulWidget {
 
 class _ImageUploadFormState extends State<UploadForm> {
   File? _selectedImage;
-  final _nameController = TextEditingController();
-  final _quantityController = TextEditingController();
+  final _namaController = TextEditingController();
+  final _kategoriController = TextEditingController();
+  final _jumlahController = TextEditingController();
+  final _deskripsiController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
+  final ApiService _apiService = ApiService();
+
+  bool _isLoading = false;
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -28,16 +36,42 @@ class _ImageUploadFormState extends State<UploadForm> {
     }
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      // Process the form data
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Form Submitted Successfully!'),
-          backgroundColor: Colors.green,
-        ),
+  Future<void> _pickCamera() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile == null) return;
+    setState(() {
+      _selectedImage = File(pickedFile.path);
+    });
+  }
+
+  void _addItem() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final item = Item(
+        nama: _namaController.text,
+        kategori: _kategoriController.text,
+        jumlah: int.parse(_jumlahController.text),
+        deskripsi: _deskripsiController.text,
+        status: 'tersedia',
       );
+      await _apiService.addItem(item);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Item added successfully')));
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to add item')));
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -51,10 +85,7 @@ class _ImageUploadFormState extends State<UploadForm> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacementNamed(
-              context,
-              '/dashboard',
-            ); //butuh perbaikan agar route kembali ke halaman sebelumnya dan bottom bar juga terpanggil
+            Navigator.pop(context);
           },
         ),
       ),
@@ -68,7 +99,36 @@ class _ImageUploadFormState extends State<UploadForm> {
               children: [
                 // Image Upload Section
                 GestureDetector(
-                  onTap: _pickImage,
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SizedBox(
+                          height: 120,
+                          child: Column(
+                            children: <Widget>[
+                              ListTile(
+                                leading: Icon(Icons.photo_camera),
+                                title: Text('Take a photo'),
+                                onTap: () {
+                                  _pickCamera();
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.photo_library),
+                                title: Text('Choose from gallery'),
+                                onTap: () {
+                                  _pickImage();
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
                   child: Container(
                     height: 200,
                     decoration: BoxDecoration(
@@ -107,63 +167,38 @@ class _ImageUploadFormState extends State<UploadForm> {
                 ),
                 SizedBox(height: 20),
 
-                // Name Input
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                    prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Color(0xFF0D47A1)),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
+                CustomTextFormField(
+                  controller: _namaController,
+                  labelText: "Nama",
+                  prefixIcon: Icons.person,
+                  validator:
+                      (value) => value!.isEmpty ? 'Nama is required' : null,
                 ),
-                SizedBox(height: 20),
-
-                // Quantity Input
-                TextFormField(
-                  controller: _quantityController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Quantity',
-                    prefixIcon: Icon(Icons.numbers),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Color(0xFF0D47A1)),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a quantity';
-                    }
-                    if (int.tryParse(value) == null) {
-                      return 'Please enter a valid number';
-                    }
-                    return null;
-                  },
+                CustomTextFormField(
+                  controller: _kategoriController,
+                  labelText: "Kategori",
+                  prefixIcon: Icons.person,
+                  validator:
+                      (value) => value!.isEmpty ? 'Kategori is required' : null,
                 ),
-                SizedBox(height: 30),
-
+                CustomTextFormField(
+                  controller: _jumlahController,
+                  labelText: "Jumlah",
+                  prefixIcon: Icons.person,
+                  validator:
+                      (value) => value!.isEmpty ? 'Jumlah is required' : null,
+                ),
+                CustomTextFormField(
+                  controller: _deskripsiController,
+                  labelText: "Deskripsi",
+                  prefixIcon: Icons.person,
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? 'Deskripsi is required' : null,
+                ),
                 // Submit Button
                 ElevatedButton(
-                  onPressed: _submitForm,
+                  onPressed: _addItem,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromARGB(255, 109, 163, 243),
                     padding: EdgeInsets.symmetric(vertical: 15),
@@ -190,8 +225,50 @@ class _ImageUploadFormState extends State<UploadForm> {
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _quantityController.dispose();
+    _namaController.dispose();
+    _jumlahController.dispose();
     super.dispose();
+  }
+}
+
+class CustomTextFormField extends StatelessWidget {
+  final TextEditingController controller;
+  final String labelText;
+  final IconData prefixIcon;
+  final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
+
+  const CustomTextFormField({
+    super.key,
+    required this.controller,
+    required this.labelText,
+    required this.prefixIcon,
+    this.validator,
+    this.keyboardType,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            labelText: labelText,
+            prefixIcon: Icon(prefixIcon),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Color(0xFF0D47A1)),
+            ),
+            filled: true,
+            fillColor: Colors.grey[100],
+          ),
+          validator: validator,
+        ),
+        SizedBox(height: 20),
+      ],
+    );
   }
 }

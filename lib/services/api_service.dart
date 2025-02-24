@@ -23,7 +23,6 @@ class ApiService {
       );
 
       final data = json.decode(response.body);
-      print(data);
 
       if (response.statusCode == 200) {
         await _storage.write(key: 'token', value: data['token']);
@@ -36,10 +35,11 @@ class ApiService {
     }
   }
 
+  // Get Items with pagination
   Future<List<Item>> getItems({required int page, required int limit}) async {
     final token = await _getToken();
     final response = await http.get(
-      Uri.parse('$baseUrl/items'),
+      Uri.parse('$baseUrl/items?page=$page&limit=$limit'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -51,32 +51,27 @@ class ApiService {
     }
   }
 
-  // Add Item
-  Future<void> addItem(
-    String nama,
-    String kategori,
-    int jumlah,
-    String deskripsi,
-    String status,
-  ) async {
-    final token = await _getToken();
-    final response = await http.post(
-      Uri.parse('$baseUrl/items'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: json.encode({
-        'nama': nama,
-        'kategori': kategori,
-        'jumlah': jumlah,
-        'deskripsi': deskripsi,
-        'status': status,
-      }),
-    );
+  // Add Item with error handling
+  Future<Map<String, dynamic>> addItem(Item item) async {
+    try {
+      final token = await _getToken();
+      final response = await http.post(
+        Uri.parse('$baseUrl/items'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(item.toJson()),
+      );
 
-    if (response.statusCode != 201) {
-      throw Exception('Failed to add item');
+      if (response.statusCode == 201) {
+        return {'success': true, 'message': 'Item added successfully'};
+      } else {
+        final error = json.decode(response.body);
+        return {'success': false, 'message': error['message'] ?? 'Failed to add item'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Network error occurred'};
     }
   }
 
@@ -102,7 +97,6 @@ class ApiService {
 
   Future<Map<String, int>> getItemStats() async {
     final token = await _getToken();
-    print('Token: $token');
     final response = await http.get(
       Uri.parse('$baseUrl/status'),
       headers: {'Authorization': 'Bearer $token'},

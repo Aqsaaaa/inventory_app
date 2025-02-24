@@ -249,11 +249,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              Navigator.pushReplacementNamed(
-                context,
-                '/form',
-                arguments: 'add',
-              );
+              Navigator.pushNamed(context, '/form', arguments: 'add');
             },
             tooltip: 'User Input',
           ),
@@ -268,11 +264,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
               ),
             ),
             onPressed: () {
-              Navigator.pushReplacementNamed(
-                context,
-                '/form',
-                arguments: 'update',
-              );
+              Navigator.pushNamed(context, '/form', arguments: 'update');
             },
             tooltip: 'Update', // Tambahkan tooltip
           ),
