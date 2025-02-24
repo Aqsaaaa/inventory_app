@@ -37,7 +37,6 @@ class _ItemsScreenState extends State<ItemsScreen> {
     });
 
     try {
-      // Modify your API service to accept page and limit parameters
       var newItems = await _apiService.getItems(
         page: _currentPage,
         limit: _itemsPerPage,
@@ -97,7 +96,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
           return Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   item.nama,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -106,51 +105,58 @@ class _ItemsScreenState extends State<ItemsScreen> {
                 ),
               ),
               SizedBox(
-                height: constraints.maxHeight * 0.4,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child:
-                      item.image != null
-                          ? Image.network(
-                            "http://10.0.2.2:3000/api/uploads/${item.image}",
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Container(
-                                color: Colors.grey[300],
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    value:
-                                        loadingProgress.expectedTotalBytes !=
-                                                null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                loadingProgress
-                                                    .expectedTotalBytes!
-                                            : null,
+                height: constraints.maxHeight * 0.5,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child:
+                        item.image != null
+                            ? Image.network(
+                              "http://10.0.2.2:3000/api/uploads/${item.image}",
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (
+                                context,
+                                child,
+                                loadingProgress,
+                              ) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  color: Colors.grey[300],
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                              : null,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey[300],
-                                child: Icon(
-                                  Icons.error_outline,
-                                  color: Colors.red,
-                                ),
-                              );
-                            },
-                          )
-                          : Container(
-                            color: Colors.grey[300],
-                            child: Icon(
-                              Icons.image,
-                              size: 50,
-                              color: Colors.grey[700],
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey[300],
+                                  child: Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red,
+                                  ),
+                                );
+                              },
+                            )
+                            : Container(
+                              color: Colors.grey[300],
+                              child: Icon(
+                                Icons.image,
+                                size: 50,
+                                color: Colors.grey[700],
+                              ),
                             ),
-                          ),
+                  ),
                 ),
               ),
               Padding(
@@ -245,8 +251,9 @@ class _ItemsScreenState extends State<ItemsScreen> {
         title: Text("Items"),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () => _loadItems(refresh: true),
+            icon: Icon(Icons.refresh, color: Colors.black),
+            onPressed:
+                () => Navigator.pushReplacementNamed(context, '/notification'),
           ),
         ],
       ),

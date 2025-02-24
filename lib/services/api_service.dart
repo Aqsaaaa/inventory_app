@@ -23,7 +23,6 @@ class ApiService {
       );
 
       final data = json.decode(response.body);
-      print(data);
 
       if (response.statusCode == 200) {
         await _storage.write(key: 'token', value: data['token']);
@@ -100,9 +99,10 @@ class ApiService {
     await _storage.delete(key: 'token');
   }
 
+
+//getStats
   Future<Map<String, int>> getItemStats() async {
     final token = await _getToken();
-    print('Token: $token');
     final response = await http.get(
       Uri.parse('$baseUrl/status'),
       headers: {'Authorization': 'Bearer $token'},
@@ -127,6 +127,22 @@ class ApiService {
       throw Exception(
         'Failed to load item statistics (Status Code: ${response.statusCode})',
       );
+    }
+  }
+
+  //getNotification
+  Future<List<History>> getNotifications() async {
+    final token = await _getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/notifications'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = json.decode(response.body);
+      return jsonData.map((data) => History.fromJson(data)).toList();
+    } else {
+      throw Exception('Failed to load notifications');
     }
   }
 }

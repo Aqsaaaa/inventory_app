@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart'
     show FlutterSecureStorage;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:inventory/screens/bottom_bar_screen.dart';
+// import 'package:inventory/screens/notification_screen.dart';
 import 'package:inventory/screens/stats_screen.dart';
 import 'screens/login_screen.dart';
 // import 'screens/items_screen.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => BottomNavBar(),
         '/add_item': (context) => AddItemScreen(),
         '/stats_status': (context) => ItemStatsScreen(),
+        // '/notification': (context) => NotificationScreen(),
       },
     );
   }
