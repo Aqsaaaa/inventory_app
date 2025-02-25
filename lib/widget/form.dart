@@ -22,8 +22,7 @@ class _ImageUploadFormState extends State<UploadForm> {
   final _deskripsiController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
-  final ApiService _apiService = ApiService();
-
+  final ItemsRepository _itemsRepository = ItemsRepository();
   bool _isLoading = false;
 
   Future<void> _pickImage() async {
@@ -58,7 +57,7 @@ class _ImageUploadFormState extends State<UploadForm> {
         deskripsi: _deskripsiController.text,
         status: 'tersedia',
       );
-      await _apiService.addItem(item);
+      await _itemsRepository.addItem(item);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Item added successfully')));
@@ -198,7 +197,7 @@ class _ImageUploadFormState extends State<UploadForm> {
                 ),
                 // Submit Button
                 ElevatedButton(
-                  onPressed: _addItem,
+                  onPressed: _isLoading ? null : _addItem,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromARGB(255, 109, 163, 243),
                     padding: EdgeInsets.symmetric(vertical: 15),
@@ -206,7 +205,7 @@ class _ImageUploadFormState extends State<UploadForm> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
+                  child: _isLoading ? CircularProgressIndicator() : Text(
                     widget.formMode == 'add' ? 'Submit' : 'Update',
                     style: TextStyle(
                       color: Colors.white,

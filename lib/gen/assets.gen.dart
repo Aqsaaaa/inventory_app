@@ -33,6 +33,7 @@ class $AssetsIconGen {
   /// File path: assets/icon/plus.svg
   SvgGenImage get plus => const SvgGenImage('assets/icon/plus.svg');
 
+  /// File path: assets/icon/update.svg
   SvgGenImage get update => const SvgGenImage('assets/icon/update.svg');
 
   /// List of all assets
@@ -43,13 +44,25 @@ class $AssetsIconGen {
     home,
     inventory,
     plus,
+    update,
   ];
+}
+
+class $AssetsImagesGen {
+  const $AssetsImagesGen();
+
+  /// File path: assets/images/logo.svg
+  SvgGenImage get logo => const SvgGenImage('assets/images/logo.svg');
+
+  /// List of all assets
+  List<SvgGenImage> get values => [logo];
 }
 
 class Assets {
   const Assets._();
 
   static const $AssetsIconGen icon = $AssetsIconGen();
+  static const $AssetsImagesGen images = $AssetsImagesGen();
 }
 
 class SvgGenImage {

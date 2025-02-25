@@ -12,7 +12,7 @@ class ItemsScreen extends StatefulWidget {
 }
 
 class _ItemsScreenState extends State<ItemsScreen> {
-  final ApiService _apiService = ApiService();
+  final ItemsRepository _itemsRepository = ItemsRepository();
   final ScrollController _scrollController = ScrollController();
   List<Item> _items = [];
   bool _isLoading = false;
@@ -40,7 +40,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
     try {
       // Modify your API service to accept page and limit parameters
-      var newItems = await _apiService.getItems(
+      var newItems = await _itemsRepository.getItems(
         page: _currentPage,
         limit: _itemsPerPage,
       );

@@ -10,7 +10,7 @@ class ItemStatsScreen extends StatefulWidget {
 
 class _ItemStatsScreenState extends State<ItemStatsScreen> {
   late Future<Map<String, int>> _futureStats;
-  final ApiService _apiService = ApiService();
+  final StatusRepository _statusRepository = StatusRepository();
   bool _isLoading = false;
 
   void _loadStats() {
@@ -18,7 +18,7 @@ class _ItemStatsScreenState extends State<ItemStatsScreen> {
       _isLoading = true;
     });
 
-    _futureStats = _apiService.getItemStats();
+    _futureStats = _statusRepository.getItemStatus();
 
     _futureStats
         .then((_) {
@@ -83,10 +83,6 @@ class _ItemStatsScreenState extends State<ItemStatsScreen> {
               ),
     );
   }
-
-  // Widget _buildStatCard(String title, int value) {
-  //   return Column(children: [Text(title), Text(value.toString())]);
-  // }
 
   Widget _buildStatCard(String title, int value) {
     return Card(
