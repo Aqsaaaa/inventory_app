@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:inventory/gen/assets.gen.dart';
 import '../../services/api_service.dart';
 import '../../models/item.dart';
 
@@ -10,7 +12,7 @@ class ItemsScreen extends StatefulWidget {
 }
 
 class _ItemsScreenState extends State<ItemsScreen> {
-  final ApiService _apiService = ApiService();
+  final ItemsRepository _itemsRepository = ItemsRepository();
   final ScrollController _scrollController = ScrollController();
   List<Item> _items = [];
   bool _isLoading = false;
@@ -38,7 +40,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
     try {
       // Modify your API service to accept page and limit parameters
-      var newItems = await _apiService.getItems(
+      var newItems = await _itemsRepository.getItems(
         page: _currentPage,
         limit: _itemsPerPage,
       );
@@ -245,8 +247,26 @@ class _ItemsScreenState extends State<ItemsScreen> {
         title: Text("Items"),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () => _loadItems(refresh: true),
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.pushNamed(context, '/form', arguments: 'add');
+            },
+            tooltip: 'User Input',
+          ),
+          IconButton(
+            icon: SvgPicture.asset(
+              Assets.icon.update.path,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).iconTheme.color!,
+                BlendMode.srcIn,
+              ),
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/form', arguments: 'update');
+            },
+            tooltip: 'Update', // Tambahkan tooltip
           ),
         ],
       ),

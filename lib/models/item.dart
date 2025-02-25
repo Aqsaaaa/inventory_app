@@ -1,5 +1,5 @@
 class Item {
-  final int id;
+  final int? id;
   final String nama;
   final String kategori;
   final int jumlah;
@@ -8,7 +8,7 @@ class Item {
   final String status;
 
   Item({
-    required this.id,
+    this.id,
     required this.nama,
     required this.kategori,
     required this.jumlah,
@@ -27,5 +27,16 @@ class Item {
       image: json['image'],
       status: json['status'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'nama': nama,
+      'kategori': kategori,
+      'jumlah': jumlah,
+      'deskripsi': deskripsi,
+      'image': image,
+      'status': status,
+    };
   }
 }

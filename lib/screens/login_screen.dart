@@ -12,7 +12,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _nrpController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final ApiService _apiService = ApiService();
+  final AuthRepository _authRepository = AuthRepository();
   final _formKey = GlobalKey<FormState>();
 
   bool _isLoading = false;
@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = true;
       });
 
-      var result = await _apiService.login(
+      var result = await _authRepository.login(
         int.parse(_nrpController.text),
         _passwordController.text,
       );

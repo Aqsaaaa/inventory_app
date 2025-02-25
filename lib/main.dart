@@ -4,9 +4,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart'
 import 'package:google_fonts/google_fonts.dart';
 import 'package:inventory/screens/bottom_bar_screen.dart';
 import 'package:inventory/screens/stats_screen.dart';
+import 'package:inventory/widget/form.dart';
 import 'screens/login_screen.dart';
 // import 'screens/items_screen.dart';
-import 'screens/add_item_screen.dart';
+// import 'screens/add_item_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,8 +42,12 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/dashboard': (context) => BottomNavBar(),
-        '/add_item': (context) => AddItemScreen(),
+        // '/add_item': (context) => AddItemScreen(),
         '/stats_status': (context) => ItemStatsScreen(),
+        '/form': (context) {
+          final formMode = ModalRoute.of(context)!.settings.arguments as String;
+          return UploadForm(key: UniqueKey(), formMode: formMode);
+        },
       },
     );
   }
