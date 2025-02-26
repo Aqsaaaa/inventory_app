@@ -1,12 +1,12 @@
 class History {
-  final int id;
+  final int? id;
   final int idBarang;
   final String status;
   final String deskripsiPemakaian;
   final String createdAt;
 
   History({
-    required this.id,
+    this.id,
     required this.idBarang,
     required this.status,
     required this.deskripsiPemakaian,
@@ -21,5 +21,14 @@ class History {
       deskripsiPemakaian: json['deskripsi_pemakaian'],
       createdAt: json['created_at'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id_barang': idBarang,
+      'status': status,
+      'deskripsi_pemakaian': deskripsiPemakaian,
+      'created_at': createdAt,
+    };
   }
 }

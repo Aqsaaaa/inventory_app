@@ -1,10 +1,10 @@
 part of '../api_service.dart';
 
 class ItemsRepository {
-  Future<List<Item>> getItems({required int page, required int limit}) async {
+  Future<List<Item>> getItems() async {
     final token = await getToken();
     final response = await http.get(
-      Uri.parse('$kBaseUrl/items?page=$page&limit=$limit'),
+      Uri.parse('$kBaseUrl/items'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -13,6 +13,20 @@ class ItemsRepository {
       return jsonData.map((data) => Item.fromJson(data)).toList();
     } else {
       throw Exception('Failed to load items');
+    }
+  }
+
+  Future<Item> getItemDetail(int id) async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$kBaseUrl/items/$id'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      return Item.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load item detail');
     }
   }
 

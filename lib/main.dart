@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart'
-    show FlutterSecureStorage;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:inventory/screens/bottom_bar_screen.dart';
+import 'package:inventory/screens/detail_item_screen.dart';
 import 'package:inventory/screens/stats_screen.dart';
 import 'package:inventory/widget/form.dart';
 import 'screens/login_screen.dart';
-// import 'screens/items_screen.dart';
-// import 'screens/add_item_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -37,15 +35,27 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
           }
-          return snapshot.data == false ? BottomNavBar() : LoginScreen();
+          return snapshot.data == true
+              ? const BottomNavBar()
+              : const LoginScreen();
         },
       ),
       routes: {
-        '/dashboard': (context) => BottomNavBar(),
-        // '/add_item': (context) => AddItemScreen(),
-        '/stats_status': (context) => ItemStatsScreen(),
+        '/dashboard': (context) => const BottomNavBar(),
+        '/stats_status': (context) => const ItemStatsScreen(),
+        '/detail_item': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as int?;
+          if (args == null) {
+            return const Scaffold(
+              body: Center(child: Text("Error: No item ID provided")),
+            );
+          }
+          return DetailItemScreen(id: args);
+        },
+
         '/form': (context) {
-          final formMode = ModalRoute.of(context)!.settings.arguments as String;
+          final formMode =
+              ModalRoute.of(context)?.settings.arguments as String? ?? 'add';
           return UploadForm(key: UniqueKey(), formMode: formMode);
         },
       },
