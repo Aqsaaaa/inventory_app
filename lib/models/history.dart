@@ -1,34 +1,50 @@
 class History {
   final int? id;
   final int idBarang;
+  final String namaBarang;
   final String status;
-  final String deskripsiPemakaian;
-  final String createdAt;
+  final String name;
+  final String namaPeminjam;
+  final int jumlahYangDipinjam;
+  final String alasan;
+  final DateTime? createdAt;
 
   History({
     this.id,
     required this.idBarang,
+    required this.namaBarang,
     required this.status,
-    required this.deskripsiPemakaian,
-    required this.createdAt,
+    required this.name,
+    required this.namaPeminjam,
+    required this.jumlahYangDipinjam,
+    required this.alasan,
+    this.createdAt,
   });
 
   factory History.fromJson(Map<String, dynamic> json) {
     return History(
       id: json['id'],
       idBarang: json['id_barang'],
+      namaBarang: json['nama_barang'],
       status: json['status'],
-      deskripsiPemakaian: json['deskripsi_pemakaian'],
-      createdAt: json['created_at'],
+      name: json['name'],
+      namaPeminjam: json['nama_peminjam'],
+      jumlahYangDipinjam: json['jumlah_yang_dipinjam'],
+      alasan: json['alasan'],
+      createdAt: DateTime.parse(json['created_at']),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'id_barang': idBarang,
+      'nama_barang': namaBarang,
       'status': status,
-      'deskripsi_pemakaian': deskripsiPemakaian,
-      'created_at': createdAt,
+      'name': name,
+      'nama_peminjam': namaPeminjam,
+      'jumlah_yang_dipinjam': jumlahYangDipinjam,
+      'alasan': alasan,
     };
   }
 }

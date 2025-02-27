@@ -2,7 +2,7 @@ class Item {
   final int? id;
   final String nama;
   final String kategori;
-  final int jumlah;
+  late final int? jumlah;
   final String deskripsi;
   final String? image;
   final String status;
