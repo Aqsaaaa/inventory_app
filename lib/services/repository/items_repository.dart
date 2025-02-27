@@ -55,4 +55,30 @@ class ItemsRepository {
       return {'success': false, 'message': 'Network error occurred'};
     }
   }
+
+  Future<Map<String, dynamic>> putItem(Item item) async {
+    try {
+      final token = await getToken();
+      final response = await http.put(
+        Uri.parse('$kBaseUrl/items/${item.id}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(item.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        return {'success': true, 'message': 'Item updated successfully'};
+      } else {
+        final error = json.decode(response.body);
+        return {
+          'success': false,
+          'message': error['message'] ?? 'Failed to update item',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Network error occurred'};
+    }
+  }
 }

@@ -169,7 +169,6 @@ class _UploadFormState extends State<UploadForm> {
         // await _itemsRepository.updateItem(item);
       }
 
-      // Tambahkan pengecekan mounted sebelum menampilkan SnackBar dan Navigator
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
