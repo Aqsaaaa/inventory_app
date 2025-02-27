@@ -14,7 +14,7 @@ class DetailItemScreen extends StatefulWidget {
 }
 
 class _DetailItemScreenState extends State<DetailItemScreen> {
-  final ItemsRepository _itemsRepository = ItemsRepository();
+  final ItemsRepository itemsRepository = ItemsRepository();
   final HistoryRepository _historyRepository = HistoryRepository();
   Item? _item;
   bool _isLoading = false;
@@ -68,8 +68,8 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
 
   // Future<void> _updateItemQuantity(int quantity) async {
   //   try {
-  //     if (_item != null) {
-  //       int jumlahSebelumnya = _item!.jumlah ?? 0;
+  //     if (item != null) {
+  //       int jumlahSebelumnya = item!.jumlah ?? 0;
   //       int jumlahBaru = jumlahSebelumnya - quantity;
 
   //       if (jumlahBaru < 0) {
@@ -79,12 +79,12 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
   //         return;
   //       }
 
-  //       _item!.jumlah = jumlahBaru;
+  //       item!.jumlah = jumlahBaru;
   //       print("Jumlah sebelumnya: $jumlahSebelumnya");
   //       print("Jumlah dipinjam: $quantity");
   //       print("Jumlah baru: $jumlahBaru");
 
-  //       await _itemsRepository.putItem(_item!); // Kirim ke API
+  //       await itemsRepository.putItem(item!); // Kirim ke API
   //       await _loadItem(); // Reload data untuk memastikan perubahan berhasil
 
   //       ScaffoldMessenger.of(context).showSnackBar(
@@ -136,10 +136,11 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
     });
 
     try {
-      var item = await _itemsRepository.getItemDetail(widget.id);
+      var item = await itemsRepository.getItemDetail(widget.id);
       if (mounted) {
         setState(() {
           _item = item;
+          _isError = _item == null;
         });
       }
     } catch (e) {

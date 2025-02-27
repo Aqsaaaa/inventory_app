@@ -74,7 +74,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
                         Navigator.pushNamed(
                           context,
                           '/detail_item',
-                          arguments: item.id, // Pastikan item.id adalah int
+                          arguments: item.id,
                         );
                       },
                       child: Card(
