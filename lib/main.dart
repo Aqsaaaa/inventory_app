@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:inventory/screens/bottom_bar_screen.dart';
 import 'package:inventory/screens/detail_item_screen.dart';
 import 'package:inventory/screens/stats_screen.dart';
-import 'package:inventory/widget/form.dart';
+import 'package:inventory/screens/form_screen.dart';
 import 'screens/login_screen.dart';
 
 void main() {
@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Inventory Management',
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(),
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         },
       ),
       routes: {
+        '/login': (context) => const LoginScreen(),
         '/dashboard': (context) => const BottomNavBar(),
         '/stats_status': (context) => const ItemStatsScreen(),
         '/detail_item': (context) {

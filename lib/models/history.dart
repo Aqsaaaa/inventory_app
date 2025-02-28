@@ -3,7 +3,6 @@ class History {
   final int idBarang;
   final String namaBarang;
   final String status;
-  final String name;
   final String namaPeminjam;
   final int jumlahYangDipinjam;
   final String alasan;
@@ -14,7 +13,6 @@ class History {
     required this.idBarang,
     required this.namaBarang,
     required this.status,
-    required this.name,
     required this.namaPeminjam,
     required this.jumlahYangDipinjam,
     required this.alasan,
@@ -27,7 +25,6 @@ class History {
       idBarang: json['id_barang'],
       namaBarang: json['nama_barang'],
       status: json['status'],
-      name: json['name'],
       namaPeminjam: json['nama_peminjam'],
       jumlahYangDipinjam: json['jumlah_yang_dipinjam'],
       alasan: json['alasan'],
@@ -41,7 +38,6 @@ class History {
       'id_barang': idBarang,
       'nama_barang': namaBarang,
       'status': status,
-      'name': name,
       'nama_peminjam': namaPeminjam,
       'jumlah_yang_dipinjam': jumlahYangDipinjam,
       'alasan': alasan,

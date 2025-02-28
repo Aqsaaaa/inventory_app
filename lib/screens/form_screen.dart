@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:developer' as developer; // Untuk logging
 
 import 'package:inventory/services/api_service.dart';
+import 'package:inventory/widget/custom_form_field_widget.dart';
 
 class UploadForm extends StatefulWidget {
   final String formMode;
@@ -37,27 +38,23 @@ class _UploadFormState extends State<UploadForm> {
 
       final pickedFile = await _picker.pickImage(
         source: source,
-        // Tambahkan opsi kompresi dan kualitas gambar
         maxWidth: 1024,
         maxHeight: 1024,
         imageQuality: 80,
       );
 
-      // Log detail file yang dipilih
       if (pickedFile != null) {
         developer.log(
           'Image picked: ${pickedFile.path}',
           name: 'UploadForm._pickImage',
         );
 
-        // Validasi file
         final file = File(pickedFile.path);
         if (!file.existsSync()) {
           _showErrorDialog('File gambar tidak ditemukan');
           return;
         }
 
-        // Periksa ukuran file
         final fileSize = file.lengthSync();
         developer.log(
           'Image file size: $fileSize bytes',
@@ -79,7 +76,6 @@ class _UploadFormState extends State<UploadForm> {
         _showErrorDialog('Tidak ada gambar yang dipilih');
       }
     } catch (e) {
-      // Log error terperinci
       developer.log(
         'Error picking image',
         name: 'UploadForm._pickImage',
@@ -92,7 +88,6 @@ class _UploadFormState extends State<UploadForm> {
     }
   }
 
-  // Tambahkan metode untuk menampilkan dialog error
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -146,7 +141,6 @@ class _UploadFormState extends State<UploadForm> {
   void _addOrUpdateItem() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Tambahkan pengecekan mounted sebelum setState
     if (mounted) {
       setState(() {
         _isLoading = true;
@@ -165,8 +159,7 @@ class _UploadFormState extends State<UploadForm> {
       if (widget.formMode == 'add') {
         await _itemsRepository.addItem(item);
       } else {
-        // Logika update item
-        // await _itemsRepository.updateItem(item);
+        await _itemsRepository.putItem(item);
       }
 
       if (mounted) {
@@ -174,22 +167,20 @@ class _UploadFormState extends State<UploadForm> {
           SnackBar(
             content: Text(
               widget.formMode == 'add'
-                  ? 'Item berhasil ditambahkan'
-                  : 'Item berhasil diperbarui',
+                  ? 'Item Added Successfully'
+                  : 'Item Updated Successfully',
             ),
           ),
         );
         Navigator.pop(context);
       }
     } catch (e) {
-      // Tambahkan pengecekan mounted sebelum menampilkan SnackBar
       if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Gagal menyimpan item: $e')));
       }
     } finally {
-      // Tambahkan pengecekan mounted sebelum setState
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -202,7 +193,7 @@ class _UploadFormState extends State<UploadForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.formMode == 'add' ? 'Tambah Item' : 'Edit Item'),
+        title: Text(widget.formMode == 'add' ? 'Add Item' : 'Edit Item'),
         backgroundColor: Color(0xFF90CAF9),
       ),
       body: SingleChildScrollView(
@@ -213,7 +204,6 @@ class _UploadFormState extends State<UploadForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Bagian Upload Gambar dengan perbaikan
                 GestureDetector(
                   onTap: _showImagePickerBottomSheet,
                   child: Container(
@@ -254,8 +244,6 @@ class _UploadFormState extends State<UploadForm> {
                   ),
                 ),
                 SizedBox(height: 20),
-
-                // Form input lainnya
                 CustomTextFormField(
                   controller: _namaController,
                   labelText: "Nama",
@@ -286,8 +274,6 @@ class _UploadFormState extends State<UploadForm> {
                       (value) =>
                           value!.isEmpty ? 'Deskripsi harus diisi' : null,
                 ),
-
-                // Tombol Submit
                 ElevatedButton(
                   onPressed: _isLoading ? null : _addOrUpdateItem,
                   style: ElevatedButton.styleFrom(
@@ -327,44 +313,4 @@ class _UploadFormState extends State<UploadForm> {
   }
 }
 
-class CustomTextFormField extends StatelessWidget {
-  final TextEditingController controller;
-  final String labelText;
-  final IconData prefixIcon;
-  final String? Function(String?)? validator;
-  final TextInputType? keyboardType;
 
-  const CustomTextFormField({
-    super.key,
-    required this.controller,
-    required this.labelText,
-    required this.prefixIcon,
-    this.validator,
-    this.keyboardType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          decoration: InputDecoration(
-            labelText: labelText,
-            prefixIcon: Icon(prefixIcon),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Color(0xFF0D47A1)),
-            ),
-            filled: true,
-            fillColor: Colors.grey[100],
-          ),
-          validator: validator,
-        ),
-        SizedBox(height: 20),
-      ],
-    );
-  }
-}

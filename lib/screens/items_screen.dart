@@ -41,12 +41,23 @@ class _ItemsScreenState extends State<ItemsScreen> {
     _loadItems();
   }
 
+  Future<Future<Object?>> logout() async {
+    await Storage.delete(key: 'token');
+    return Navigator.pushReplacementNamed(context, '/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("ITEMS", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            logout();
+          },
+          icon: Icon(Icons.exit_to_app),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.add),

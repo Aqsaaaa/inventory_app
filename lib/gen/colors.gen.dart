@@ -16,14 +16,14 @@ class ColorName {
   /// Color: #ffffff
   static const Color background = Color(0xFFFFFFFF);
 
-  /// Color: #8ecae6
-  static const Color bgBlue = Color(0xFF8ECAE6);
+  /// Color: #5aa4fb
+  static const Color bgBlue = Color(0xFF5AA4FB);
 
-  /// Color: #77d26f
-  static const Color bgGreen = Color(0xFF77D26F);
+  /// Color: #53d768
+  static const Color bgGreen = Color(0xFF53D768);
 
-  /// Color: #e87c7b
-  static const Color bgRed = Color(0xFFE87C7B);
+  /// Color: #fd3d3a
+  static const Color bgRed = Color(0xFFFD3D3A);
 
   /// Color: #f7f7b1
   static const Color bgYellow = Color(0xFFF7F7B1);

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inventory/gen/colors.gen.dart';
+import 'package:inventory/widget/dialog_widget.dart';
 import '../../services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -33,11 +35,22 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       if (result['success']) {
+        showSnackBarr(
+          context,
+          result['message'],
+          buttonColor: ColorName.textGreen,
+          backgroundColor: ColorName.bgGreen,
+          textColor: ColorName.background,
+        );
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
-        ScaffoldMessenger.of(
+        showSnackBarr(
           context,
-        ).showSnackBar(SnackBar(content: Text(result['message'])));
+          result['message'],
+          buttonColor: ColorName.textRed,
+          backgroundColor: ColorName.bgRed,
+          textColor: ColorName.background,
+        );
       }
     }
   }
@@ -150,8 +163,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                           SizedBox(height: 24),
-
-                          // Login button
                           _isLoading
                               ? Center(child: CircularProgressIndicator())
                               : ElevatedButton(
