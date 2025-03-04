@@ -1,10 +1,13 @@
+import 'dart:io';
+
 class Item {
   final int? id;
   final String nama;
   final String kategori;
-  late final int? jumlah;
+  final int? jumlah;
   final String deskripsi;
-  final String? image;
+  final String? imageUrl;
+  final File? image;
   final String status;
 
   Item({
@@ -13,6 +16,7 @@ class Item {
     required this.kategori,
     required this.jumlah,
     required this.deskripsi,
+    this.imageUrl,
     this.image,
     required this.status,
   });
@@ -24,19 +28,21 @@ class Item {
       kategori: json['kategori'],
       jumlah: json['jumlah'],
       deskripsi: json['deskripsi'],
-      image: json['image'],
+      imageUrl: json['image'],
       status: json['status'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'nama': nama,
       'kategori': kategori,
       'jumlah': jumlah,
       'deskripsi': deskripsi,
-      'image': image,
+      'image': image?.path,
       'status': status,
     };
   }
 }
+

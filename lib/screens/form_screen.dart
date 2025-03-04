@@ -1,110 +1,39 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:inventory/models/item.dart';
-import 'dart:io';
-import 'dart:developer' as developer; // Untuk logging
+import 'package:inventory/models/item.dart'; 
 
 import 'package:inventory/services/api_service.dart';
 import 'package:inventory/widget/custom_form_field_widget.dart';
 
 class UploadForm extends StatefulWidget {
-  final String formMode;
-  final Item? existingItem;
-
-  const UploadForm({super.key, required this.formMode, this.existingItem});
+  const UploadForm({super.key});
 
   @override
   _UploadFormState createState() => _UploadFormState();
 }
 
 class _UploadFormState extends State<UploadForm> {
-  File? _selectedImage;
   final _namaController = TextEditingController();
   final _kategoriController = TextEditingController();
   final _jumlahController = TextEditingController();
   final _deskripsiController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final ImagePicker _picker = ImagePicker();
   final ItemsRepository _itemsRepository = ItemsRepository();
   bool _isLoading = false;
+  File? _images;
 
   Future<void> _pickImage(ImageSource source) async {
-    try {
-      // Tambahkan logging untuk debugging
-      developer.log(
-        'Attempting to pick image from $source',
-        name: 'UploadForm._pickImage',
-      );
-
-      final pickedFile = await _picker.pickImage(
-        source: source,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 80,
-      );
-
-      if (pickedFile != null) {
-        developer.log(
-          'Image picked: ${pickedFile.path}',
-          name: 'UploadForm._pickImage',
-        );
-
-        final file = File(pickedFile.path);
-        if (!file.existsSync()) {
-          _showErrorDialog('File gambar tidak ditemukan');
-          return;
-        }
-
-        final fileSize = file.lengthSync();
-        developer.log(
-          'Image file size: $fileSize bytes',
-          name: 'UploadForm._pickImage',
-        );
-
-        if (fileSize == 0) {
-          _showErrorDialog('Ukuran file gambar 0 byte');
-          return;
-        }
-
-        if (mounted) {
-          setState(() {
-            _selectedImage = file;
-          });
-        }
-      } else {
-        developer.log('No image selected', name: 'UploadForm._pickImage');
-        _showErrorDialog('Tidak ada gambar yang dipilih');
-      }
-    } catch (e) {
-      developer.log(
-        'Error picking image',
-        name: 'UploadForm._pickImage',
-        error: e,
-      );
-
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+    if (image != null) {
       if (mounted) {
-        _showErrorDialog('Gagal memilih gambar: $e');
+        setState(() {
+          _images = File(image.path);
+        });
       }
     }
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text('Error'),
-            content: Text(message),
-            actions: <Widget>[
-              TextButton(
-                child: Text('Tutup'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
-            ],
-          ),
-    );
   }
 
   void _showImagePickerBottomSheet() {
@@ -154,24 +83,15 @@ class _UploadFormState extends State<UploadForm> {
         jumlah: int.parse(_jumlahController.text),
         deskripsi: _deskripsiController.text,
         status: 'tersedia',
+        image: _images!,
       );
 
-      if (widget.formMode == 'add') {
-        await _itemsRepository.addItem(item);
-      } else {
-        await _itemsRepository.putItem(item);
-      }
+      await _itemsRepository.addItem(item);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.formMode == 'add'
-                  ? 'Item Added Successfully'
-                  : 'Item Updated Successfully',
-            ),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Item Added Successfully')));
         Navigator.pop(context);
       }
     } catch (e) {
@@ -193,7 +113,7 @@ class _UploadFormState extends State<UploadForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.formMode == 'add' ? 'Add Item' : 'Edit Item'),
+        title: Text("form mode"),
         backgroundColor: Color(0xFF90CAF9),
       ),
       body: SingleChildScrollView(
@@ -203,7 +123,7 @@ class _UploadFormState extends State<UploadForm> {
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+              children: <Widget>[
                 GestureDetector(
                   onTap: _showImagePickerBottomSheet,
                   child: Container(
@@ -214,11 +134,11 @@ class _UploadFormState extends State<UploadForm> {
                       border: Border.all(color: Color(0xFF0D47A1)),
                     ),
                     child:
-                        _selectedImage != null
+                        _images != null
                             ? ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: Image.file(
-                                _selectedImage!,
+                                _images!,
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                               ),
@@ -287,7 +207,7 @@ class _UploadFormState extends State<UploadForm> {
                       _isLoading
                           ? CircularProgressIndicator()
                           : Text(
-                            widget.formMode == 'add' ? 'Simpan' : 'Perbarui',
+                            'Simpan',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -312,5 +232,3 @@ class _UploadFormState extends State<UploadForm> {
     super.dispose();
   }
 }
-
-

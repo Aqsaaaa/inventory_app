@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:inventory/screens/bottom_bar_screen.dart';
 import 'package:inventory/screens/detail_item_screen.dart';
+import 'package:inventory/screens/history_screen.dart';
 import 'package:inventory/screens/stats_screen.dart';
 import 'package:inventory/screens/form_screen.dart';
 import 'screens/login_screen.dart';
@@ -55,11 +56,8 @@ class MyApp extends StatelessWidget {
           return DetailItemScreen(id: args);
         },
 
-        '/form': (context) {
-          final formMode =
-              ModalRoute.of(context)?.settings.arguments as String? ?? 'add';
-          return UploadForm(key: UniqueKey(), formMode: formMode);
-        },
+        '/form': (context) => UploadForm(),
+        '/history': (context) => const HistoryScreen(),
       },
     );
   }

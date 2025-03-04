@@ -28,6 +28,9 @@ class ColorName {
   /// Color: #f7f7b1
   static const Color bgYellow = Color(0xFFF7F7B1);
 
+  /// Color: #a0a3ac
+  static const Color polisi = Color(0xFFA0A3AC);
+
   /// Color: #2f97fa
   static const Color primary = Color(0xFF2F97FA);
 

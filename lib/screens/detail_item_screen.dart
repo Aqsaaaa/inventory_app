@@ -18,7 +18,7 @@ class DetailItemScreen extends StatefulWidget {
 
 class _DetailItemScreenState extends State<DetailItemScreen> {
   final ItemsRepository itemsRepository = ItemsRepository();
-  final HistoryRepository _historyRepository = HistoryRepository();
+  final HistoryRepository historyRepository = HistoryRepository();
   Item? _item;
   bool _isLoading = false;
   bool _isError = false;
@@ -28,6 +28,10 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
       TextEditingController();
   final TextEditingController _alasanController = TextEditingController();
 
+  dynamic _getRepository(bool useHistory) {
+    return useHistory ? historyRepository : itemsRepository;
+  }
+
   Future<void> _postItem(String newStatus) async {
     setState(() {
       _isLoading = true;
@@ -35,7 +39,7 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
     });
 
     try {
-      await _historyRepository.addHistory(
+      await _getRepository(true).addHistory(
         History(
           status: newStatus,
           idBarang: widget.id,
@@ -148,7 +152,7 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
         });
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text("Failed to load item")));
+        ).showSnackBar(SnackBar(content: Text("Failed to load item: $e")));
       }
     }
 
@@ -168,7 +172,13 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Detail Item')),
+      appBar: AppBar(
+        title: const Text(
+          'Detail Item',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -193,9 +203,9 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child:
-                            _item!.image != null
+                            _item!.imageUrl != null
                                 ? Image.network(
-                                  "http://10.0.2.2:3000/api/uploads/${_item!.image}",
+                                  '${_item!.imageUrl}',
                                   height: 200,
                                   width: double.infinity,
                                   fit: BoxFit.cover,

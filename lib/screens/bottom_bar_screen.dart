@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:inventory/gen/assets.gen.dart';
 import 'package:inventory/gen/colors.gen.dart';
+import 'package:inventory/screens/history_screen.dart';
 import 'package:inventory/screens/items_screen.dart';
 import 'package:inventory/screens/stats_screen.dart';
 
@@ -18,7 +19,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _pages = [
     const ItemsScreen(),
     const ItemStatsScreen(),
-    const ItemsScreen(),
+    const HistoryScreen(),
   ];
 
   @override
