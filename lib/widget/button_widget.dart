@@ -26,7 +26,11 @@ class SubmitButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         child: Text(
           description,
-          style: TextStyle(color: warna, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: warna,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
         ),
       ),
     );
