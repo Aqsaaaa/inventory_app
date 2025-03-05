@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:inventory/models/item.dart'; 
+import 'package:inventory/gen/assets.gen.dart';
+import 'package:inventory/models/item.dart';
 
 import 'package:inventory/services/api_service.dart';
 import 'package:inventory/widget/custom_form_field_widget.dart';
@@ -113,7 +114,8 @@ class _UploadFormState extends State<UploadForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("form mode"),
+        title: Text("Form Mode"),
+        centerTitle: true,
         backgroundColor: Color(0xFF90CAF9),
       ),
       body: SingleChildScrollView(
@@ -167,21 +169,21 @@ class _UploadFormState extends State<UploadForm> {
                 CustomTextFormField(
                   controller: _namaController,
                   labelText: "Nama",
-                  prefixIcon: Icons.text_fields,
+                  prefixIcon: Assets.icon.item.svg(width: 30, height: 30),
                   validator:
                       (value) => value!.isEmpty ? 'Nama harus diisi' : null,
                 ),
                 CustomTextFormField(
                   controller: _kategoriController,
                   labelText: "Kategori",
-                  prefixIcon: Icons.category,
+                  prefixIcon: Assets.icon.category.svg(height: 2),
                   validator:
                       (value) => value!.isEmpty ? 'Kategori harus diisi' : null,
                 ),
                 CustomTextFormField(
                   controller: _jumlahController,
                   labelText: "Jumlah",
-                  prefixIcon: Icons.numbers,
+                  prefixIcon: Assets.icon.quantity.svg(width: 24, height: 24),
                   keyboardType: TextInputType.number,
                   validator:
                       (value) => value!.isEmpty ? 'Jumlah harus diisi' : null,
@@ -189,7 +191,10 @@ class _UploadFormState extends State<UploadForm> {
                 CustomTextFormField(
                   controller: _deskripsiController,
                   labelText: "Deskripsi",
-                  prefixIcon: Icons.description,
+                  prefixIcon: Assets.icon.description.svg(
+                    width: 20,
+                    height: 20,
+                  ),
                   validator:
                       (value) =>
                           value!.isEmpty ? 'Deskripsi harus diisi' : null,

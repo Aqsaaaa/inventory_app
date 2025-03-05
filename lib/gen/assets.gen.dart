@@ -18,8 +18,15 @@ class $AssetsIconGen {
   /// File path: assets/icon/back.svg
   SvgGenImage get back => const SvgGenImage('assets/icon/back.svg');
 
+  /// File path: assets/icon/category.svg
+  SvgGenImage get category => const SvgGenImage('assets/icon/category.svg');
+
   /// File path: assets/icon/delete.svg
   SvgGenImage get delete => const SvgGenImage('assets/icon/delete.svg');
+
+  /// File path: assets/icon/description.svg
+  SvgGenImage get description =>
+      const SvgGenImage('assets/icon/description.svg');
 
   /// File path: assets/icon/history.svg
   SvgGenImage get history => const SvgGenImage('assets/icon/history.svg');
@@ -30,8 +37,14 @@ class $AssetsIconGen {
   /// File path: assets/icon/inventory.svg
   SvgGenImage get inventory => const SvgGenImage('assets/icon/inventory.svg');
 
+  /// File path: assets/icon/item.svg
+  SvgGenImage get item => const SvgGenImage('assets/icon/item.svg');
+
   /// File path: assets/icon/plus.svg
   SvgGenImage get plus => const SvgGenImage('assets/icon/plus.svg');
+
+  /// File path: assets/icon/quantity.svg
+  SvgGenImage get quantity => const SvgGenImage('assets/icon/quantity.svg');
 
   /// File path: assets/icon/update.svg
   SvgGenImage get update => const SvgGenImage('assets/icon/update.svg');
@@ -39,11 +52,15 @@ class $AssetsIconGen {
   /// List of all assets
   List<SvgGenImage> get values => [
     back,
+    category,
     delete,
+    description,
     history,
     home,
     inventory,
+    item,
     plus,
+    quantity,
     update,
   ];
 }
