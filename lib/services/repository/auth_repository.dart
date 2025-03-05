@@ -22,7 +22,4 @@ class AuthRepository {
     }
   }
 
-  Future logout() async {
-    await Storage.delete(key: 'token');
-  }
 }

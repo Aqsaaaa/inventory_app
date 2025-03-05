@@ -3,6 +3,9 @@ import 'package:inventory/gen/colors.gen.dart';
 import 'package:inventory/models/history.dart';
 import 'package:inventory/models/item.dart';
 import 'package:inventory/services/api_service.dart';
+import 'package:inventory/widget/button_widget.dart';
+import 'package:inventory/widget/modal_widget.dart';
+import 'package:inventory/widget/status_widget.dart';
 
 class DetailItemScreen extends StatefulWidget {
   final int id;
@@ -15,7 +18,7 @@ class DetailItemScreen extends StatefulWidget {
 
 class _DetailItemScreenState extends State<DetailItemScreen> {
   final ItemsRepository itemsRepository = ItemsRepository();
-  final HistoryRepository _historyRepository = HistoryRepository();
+  final HistoryRepository historyRepository = HistoryRepository();
   Item? _item;
   bool _isLoading = false;
   bool _isError = false;
@@ -23,6 +26,11 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
   final TextEditingController _namaPeminjamController = TextEditingController();
   final TextEditingController _jumlahYangDipinjamController =
       TextEditingController();
+  final TextEditingController _alasanController = TextEditingController();
+
+  dynamic _getRepository(bool useHistory) {
+    return useHistory ? historyRepository : itemsRepository;
+  }
 
   Future<void> _postItem(String newStatus) async {
     setState(() {
@@ -31,23 +39,18 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
     });
 
     try {
-      await _historyRepository.addHistory(
+      await _getRepository(true).addHistory(
         History(
           status: newStatus,
           idBarang: widget.id,
           namaBarang: _item!.nama,
-          name: _item!.nama,
           namaPeminjam: _namaPeminjamController.text,
           jumlahYangDipinjam: int.parse(_jumlahYangDipinjamController.text),
-          alasan: '',
+          alasan: _alasanController.text,
         ),
       );
 
-      // await _updateItemQuantity(int.parse(_jumlahYangDipinjamController.text));
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Status berhasil diperbarui ke '$newStatus'!")),
-      );
+      await _updateItem(int.parse(_jumlahYangDipinjamController.text));
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -66,42 +69,54 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
     }
   }
 
-  // Future<void> _updateItemQuantity(int quantity) async {
-  //   try {
-  //     if (item != null) {
-  //       int jumlahSebelumnya = item!.jumlah ?? 0;
-  //       int jumlahBaru = jumlahSebelumnya - quantity;
+  Future<void> _updateItem(int quantity) async {
+    try {
+      if (_item != null) {
+        int jumlahSebelumnya = _item!.jumlah ?? 0;
+        int jumlahBaru;
 
-  //       if (jumlahBaru < 0) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text("Jumlah tidak boleh kurang dari 0")),
-  //         );
-  //         return;
-  //       }
+        if (_item!.status.toLowerCase() == 'dikembalikan') {
+          jumlahBaru = jumlahSebelumnya + quantity;
+        } else {
+          jumlahBaru = jumlahSebelumnya - quantity;
+        }
 
-  //       item!.jumlah = jumlahBaru;
-  //       print("Jumlah sebelumnya: $jumlahSebelumnya");
-  //       print("Jumlah dipinjam: $quantity");
-  //       print("Jumlah baru: $jumlahBaru");
+        if (jumlahBaru < 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Jumlah tidak boleh kurang dari 0")),
+          );
+          return;
+        }
 
-  //       await itemsRepository.putItem(item!); // Kirim ke API
-  //       await _loadItem(); // Reload data untuk memastikan perubahan berhasil
+        await itemsRepository.putItem(
+          Item(
+            id: widget.id,
+            jumlah: jumlahBaru,
+            nama: _item!.nama,
+            kategori: _item!.kategori,
+            status: _item!.status,
+            image: _item!.image,
+            deskripsi: _item!.deskripsi,
+          ),
+        );
 
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text("Jumlah item berhasil diperbarui!")),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     if (mounted) {
-  //       setState(() {
-  //         _isError = true;
-  //       });
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text("Gagal memperbarui jumlah item")),
-  //       );
-  //     }
-  //   }
-  // }
+        await _loadItem();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Jumlah item berhasil diperbarui!")),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isError = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Gagal memperbarui jumlah item")),
+        );
+      }
+    }
+  }
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
@@ -113,19 +128,6 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
         return ColorName.bgRed;
       default:
         return ColorName.bgBlue;
-    }
-  }
-
-  Color _getStatusText(String status) {
-    switch (status.toLowerCase()) {
-      case 'dipakai':
-        return ColorName.textGreen;
-      case 'dikembalikan':
-        return ColorName.textYellow;
-      case 'rusak':
-        return ColorName.textRed;
-      default:
-        return ColorName.textBlue;
     }
   }
 
@@ -150,7 +152,7 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
         });
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text("Failed to load item")));
+        ).showSnackBar(SnackBar(content: Text("Failed to load item: $e")));
       }
     }
 
@@ -170,7 +172,13 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Detail Item')),
+      appBar: AppBar(
+        title: const Text(
+          'Detail Item',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -191,13 +199,13 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child:
-                            _item!.image != null
+                            _item!.imageUrl != null
                                 ? Image.network(
-                                  "http://10.0.2.2:3000/api/uploads/${_item!.image}",
+                                  '${_item!.imageUrl}',
                                   height: 200,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
@@ -209,61 +217,75 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
                                   child: Icon(Icons.image_not_supported),
                                 ),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 16),
                       Status(
                         description: _item!.status,
-                        warna: _getStatusText(_item!.status),
+                        warna: ColorName.background,
                         bg: _getStatusColor(_item!.status),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
                       Text(
                         "Kategori: ${_item!.kategori}",
                         style: const TextStyle(fontSize: 18),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
                       Text(
                         "Jumlah: ${_item!.jumlah}",
                         style: const TextStyle(fontSize: 18),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
                       TextField(
                         controller: _namaPeminjamController,
                         decoration: const InputDecoration(
                           labelText: 'Nama Peminjam',
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      TextField(
+                      const SizedBox(height: 16),
+                      TextFormField(
                         controller: _jumlahYangDipinjamController,
                         decoration: const InputDecoration(
                           labelText: 'Jumlah Yang Dipinjam',
                         ),
                         keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Jumlah tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() {});
+                        },
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
                       Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SubmitButton(
-                              description: _item!.status,
-                              warna: _getStatusText(_item!.status),
-                              bg: _getStatusColor(_item!.status),
-                              onPressed: () => _postItem('dipakai'),
+                              description: "Pakai",
+                              warna: ColorName.background,
+                              bg: ColorName.bgGreen,
+                              onPressed:
+                                  () => showCustomModalBottomSheett(
+                                    context: context,
+                                    alasanController: _alasanController,
+                                    bgSubmit: ColorName.bgGreen,
+                                    onSubmit: () => _postItem('Dipakai'),
+                                  ),
                             ),
                             SizedBox(width: 8),
                             SubmitButton(
-                              description: _item!.status,
-                              warna: _getStatusText(_item!.status),
-                              bg: _getStatusColor(_item!.status),
-                              onPressed: () => _postItem('dikembalikan'),
-                            ),
-                            SizedBox(width: 8),
-                            SubmitButton(
-                              description: _item!.status,
-                              warna: _getStatusText(_item!.status),
-                              bg: _getStatusColor(_item!.status),
-                              onPressed: () => _postItem('rusak'),
+                              description: "Rusak",
+                              warna: ColorName.background,
+                              bg: ColorName.bgRed,
+                              onPressed:
+                                  () => showCustomModalBottomSheett(
+                                    context: context,
+                                    alasanController: _alasanController,
+                                    bgSubmit: ColorName.bgGreen,
+                                    onSubmit: () => _postItem('Rusak'),
+                                  ),
                             ),
                             SizedBox(width: 8),
                           ],
@@ -273,67 +295,6 @@ class _DetailItemScreenState extends State<DetailItemScreen> {
                   ),
                 ),
               ),
-    );
-  }
-}
-
-class Status extends StatelessWidget {
-  final String description;
-  final Color warna;
-  final Color bg;
-
-  const Status({
-    super.key,
-    required this.description,
-    required this.warna,
-    required this.bg,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(20.0),
-      ),
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        description,
-        style: TextStyle(color: warna, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
-
-class SubmitButton extends StatelessWidget {
-  final String description;
-  final Color warna;
-  final Color bg;
-  final VoidCallback onPressed;
-
-  const SubmitButton({
-    super.key,
-    required this.description,
-    required this.warna,
-    required this.bg,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          description,
-          style: TextStyle(color: warna, fontWeight: FontWeight.bold),
-        ),
-      ),
     );
   }
 }

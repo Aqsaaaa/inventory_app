@@ -47,7 +47,7 @@ class _ItemStatsScreenState extends State<ItemStatsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'STATISTIC',
+          'Statistics',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,

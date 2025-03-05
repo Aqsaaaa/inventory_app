@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:inventory/gen/assets.gen.dart';
+import 'package:inventory/gen/colors.gen.dart';
+import 'package:inventory/widget/dialog_widget.dart';
 import '../../services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -33,11 +35,22 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       if (result['success']) {
+        showSnackBarr(
+          context,
+          result['message'],
+          buttonColor: ColorName.textGreen,
+          backgroundColor: ColorName.bgGreen,
+          textColor: ColorName.background,
+        );
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
-        ScaffoldMessenger.of(
+        showSnackBarr(
           context,
-        ).showSnackBar(SnackBar(content: Text(result['message'])));
+          result['message'],
+          buttonColor: ColorName.textRed,
+          backgroundColor: ColorName.bgRed,
+          textColor: ColorName.background,
+        );
       }
     }
   }
@@ -51,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF0D47A1), // Dark blue
+              ColorName.textBlue, // Dark blue
               Color(0xFF90CAF9), // Light blue
             ],
           ),
@@ -69,15 +82,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 120,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Color(0xFF0D47A1), width: 3),
+                      border: Border.all(color: ColorName.textBlue, width: 3),
                       color: Colors.white,
                     ),
-                    child: ClipOval(
-                      child: SvgPicture.asset(
-                        'assets/images/logo.svg',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    child: ClipOval(child: Assets.images.polda.image()),
                   ),
                   SizedBox(height: 48),
 
@@ -87,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Color(0xFF0D47A1), width: 2),
+                      border: Border.all(color: ColorName.textBlue, width: 2),
                     ),
                     child: Form(
                       key: _formKey,
@@ -99,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF0D47A1),
+                              color: ColorName.textBlue,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -113,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               border: OutlineInputBorder(),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: Color(0xFF0D47A1),
+                                  color: ColorName.textBlue,
                                   width: 2,
                                 ),
                               ),
@@ -136,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               border: OutlineInputBorder(),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: Color(0xFF0D47A1),
+                                  color: ColorName.textBlue,
                                   width: 2,
                                 ),
                               ),
@@ -150,8 +158,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                           SizedBox(height: 24),
-
-                          // Login button
                           _isLoading
                               ? Center(child: CircularProgressIndicator())
                               : ElevatedButton(

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:inventory/gen/assets.gen.dart';
-import 'package:inventory/gen/colors.gen.dart';
+import 'package:inventory/models/history.dart';
 import '../../services/api_service.dart';
-import '../../models/item.dart';
 
-class ItemsScreen extends StatefulWidget {
-  const ItemsScreen({super.key});
+class HistoryScreen extends StatefulWidget {
+  const HistoryScreen({super.key});
 
   @override
-  _ItemsScreenState createState() => _ItemsScreenState();
+  _HistoryScreenState createState() => _HistoryScreenState();
 }
 
-class _ItemsScreenState extends State<ItemsScreen> {
-  final ItemsRepository _itemsRepository = ItemsRepository();
-  List<Item> _items = [];
+class _HistoryScreenState extends State<HistoryScreen> {
+  final HistoryRepository _historyRepository = HistoryRepository();
+  List<History> _history = [];
   bool _isLoading = false;
 
   Future<void> _loadItems() async {
@@ -22,14 +20,14 @@ class _ItemsScreenState extends State<ItemsScreen> {
     });
 
     try {
-      var items = await _itemsRepository.getItems();
+      var history = await _historyRepository.getHistory();
       setState(() {
-        _items = items;
+        _history = history;
       });
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Failed to load items: $e")));
+      ).showSnackBar(SnackBar(content: Text("Failed to load items")));
     }
 
     setState(() {
@@ -52,8 +50,14 @@ class _ItemsScreenState extends State<ItemsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Inventory", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text("History", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            logout();
+          },
+          icon: Icon(Icons.exit_to_app),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -63,29 +67,10 @@ class _ItemsScreenState extends State<ItemsScreen> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(color: ColorName.polisi),
-              child: Assets.images.polda.image(),
-            ),
-            ListTile(
-              leading: Icon(Icons.exit_to_app),
-              title: const Text('Log Out'),
-              onTap: () {
-                logout();
-              },
-            ),
-          ],
-        ),
-      ),
       body:
           _isLoading
               ? Center(child: CircularProgressIndicator())
-              : _items.isEmpty
+              : _history.isEmpty
               ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -101,17 +86,16 @@ class _ItemsScreenState extends State<ItemsScreen> {
                     ),
                   ],
                 ),
-              )
-              : RefreshIndicator(
+              ) : RefreshIndicator(
                 onRefresh: _loadItems,
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     childAspectRatio: 0.75,
                   ),
-                  itemCount: _items.length,
+                  itemCount: _history.length,
                   itemBuilder: (context, index) {
-                    final item = _items[index];
+                    final item = _history[index];
                     return GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(
@@ -133,32 +117,12 @@ class _ItemsScreenState extends State<ItemsScreen> {
                             children: [
                               Center(
                                 child: Text(
-                                  item.nama,
+                                  item.namaBarang,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
-                              SizedBox(height: 8),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child:
-                                    item.imageUrl != null
-                                        ? Image.network(
-                                          '${item.imageUrl}',
-                                          height: 100,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
-                                        )
-                                        : Container(
-                                          height: 100,
-                                          width: double.infinity,
-                                          color: Colors.grey[300],
-                                          child: Icon(
-                                            Icons.image_not_supported,
-                                          ),
-                                        ),
                               ),
                               SizedBox(height: 8),
                               Padding(
@@ -170,13 +134,13 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                     Column(
                                       children: [
                                         Text(
-                                          'Kategori',
+                                          'Status',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         Text(
-                                          item.kategori,
+                                          item.status,
                                           style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey[600],
@@ -194,7 +158,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                           ),
                                         ),
                                         Text(
-                                          item.jumlah.toString(),
+                                          item.jumlahYangDipinjam.toString(),
                                           style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey[600],
@@ -216,7 +180,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                       ),
                                     ),
                                     Text(
-                                      item.deskripsi,
+                                      item.alasan,
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey[800],

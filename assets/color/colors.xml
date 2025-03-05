@@ -3,18 +3,21 @@
     <color name="background">#ffffff</color>
     <color name="primary">#2f97fa</color>
 
+    <color name="polisi">#a0a3ac</color>
+
     <!-- Status bar color -->
 
-    <color name="bg_green">#77d26f</color>
+    <color name="bg_green">#53d768</color>
     <color name="text_green">#4f7836</color>
 
-    <color name="bg_red">#e87c7b</color>
+    <color name="bg_red">#fd3d3a</color>
     <color name="text_red">#ac2121</color>
 
-    <color name="bg_blue">#8ecae6</color>
+    <color name="bg_blue">#5aa4fb</color>
     <color name="text_blue">#004166</color>
 
     <color name="bg_yellow">#f7f7b1</color>
     <color name="text_yellow">#f5e370</color>
+    
 
 </resources>
