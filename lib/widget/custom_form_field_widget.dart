@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
-  final IconData prefixIcon;
+  final SvgPicture prefixIcon;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
 
@@ -25,7 +26,7 @@ class CustomTextFormField extends StatelessWidget {
           keyboardType: keyboardType,
           decoration: InputDecoration(
             labelText: labelText,
-            prefixIcon: Icon(prefixIcon),
+            prefixIcon: Padding(padding: EdgeInsets.all(6), child: prefixIcon),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
